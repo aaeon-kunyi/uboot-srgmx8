@@ -1,0 +1,14 @@
+if TARGET_SRGMX8MM
+
+config SYS_BOARD
+	default "srg-mx8mm"
+
+config SYS_VENDOR
+	default "aaeon"
+
+config SYS_CONFIG_NAME
+	default "srg_mx8mm"
+
+source "board/freescale/common/Kconfig"
+
+endif

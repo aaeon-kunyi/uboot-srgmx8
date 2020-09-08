@@ -1,0 +1,8 @@
+AAEON SRG-MX8MM BOARD
+M:  KunYi Chen <kunyi.chen@sparktech.io>
+S:  Maintained
+D:  board/aaeon/srg_mx8mm/
+F:  include/configs/srg_mx8mm.h
+F:  configs/srg_mx8mm_defconfig
+F:  arch/arm/dts/srg-mx8mm.dts
+
