@@ -46,14 +46,34 @@ int board_early_init_f(void)
 }
 
 #if IS_ENABLED(CONFIG_FEC_MXC)
+#define FEC_RST_PAD IMX_GPIO_NR(4, 22)
+static iomux_v3_cfg_t const fec1_rst_pads[] = {
+    IMX8MM_PAD_SAI2_RXC_GPIO4_IO22 | MUX_PAD_CTRL(NO_PAD_CTRL),
+};
+
+static void setup_iomux_fec(void)
+{
+    imx_iomux_v3_setup_multiple_pads(fec1_rst_pads,
+                     ARRAY_SIZE(fec1_rst_pads));
+
+    gpio_request(FEC_RST_PAD, "fec1_rst");
+    gpio_direction_output(FEC_RST_PAD, 0);
+    mdelay(15);
+    gpio_direction_output(FEC_RST_PAD, 1);
+    mdelay(20);
+}
+
 static int setup_fec(void)
 {
     struct iomuxc_gpr_base_regs *gpr =
         (struct iomuxc_gpr_base_regs *)IOMUXC_GPR_BASE_ADDR;
 
-    /* Use 125M anatop REF_CLK1 for ENET1, not from external */
-    clrsetbits_le32(&gpr->gpr[1], 0x2000, 0);
+    setup_iomux_fec();
 
+    /* Use 125M anatop REF_CLK1 for ENET1, not from external */
+    clrsetbits_le32(&gpr->gpr[1],
+            BIT(13) | BIT(17), 0);
+    udelay(100); /* wait clock */
     return 0;
 }
 
