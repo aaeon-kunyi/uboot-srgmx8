@@ -80,10 +80,12 @@
 #define CONFIG_EXTRA_ENV_SETTINGS		\
     CONFIG_MFG_ENV_SETTINGS \
     JAILHOUSE_ENV \
+    "bootdir=/boot\0"   \
     "script=boot.scr\0" \
-    "image=Image\0" \
+    "image=Image.gz\0" \
     "splashimage=0x50000000\0" \
     "console=ttymxc1,115200\0" \
+    "img_addr=0x42000000\0"         \
     "fdt_addr=0x43500000\0"			\
     "fdt_high=0xffffffffffffffff\0"		\
     "boot_fit=no\0" \
@@ -94,14 +96,20 @@
     "mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
     "mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
     "mmcautodetect=yes\0" \
-    "mmcargs=setenv bootargs ${jh_clk} console=${console} root=${mmcroot}\0 " \
-    "loadbootscript=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
+    "boothack=maxcpus=4\0" \
+    "optargs=setenv bootargs ${bootargs} ${kernelargs};\0" \
+    "mmcargs=setenv bootargs ${jh_clk} console=${console} " \
+        "root=/dev/mmcblk${mmcdev}p${mmcpart} rootwait rw " \
+        "${boothack} \0" \
+    "loadbootscript=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${bootdir}/${script};\0" \
     "bootscript=echo Running bootscript from mmc ...; " \
         "source\0" \
-    "loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
-    "loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+    "loadimage=load mmc ${mmcdev}:${mmcpart} ${img_addr} ${bootdir}/${image};" \
+        "unzip ${img_addr} ${loadaddr}\0" \
+    "loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${bootdir}/${fdt_file}\0" \
     "mmcboot=echo Booting from mmc ...; " \
         "run mmcargs; " \
+        "run optargs; " \
         "if test ${boot_fit} = yes || test ${boot_fit} = try; then " \
             "bootm ${loadaddr}; " \
         "else " \
