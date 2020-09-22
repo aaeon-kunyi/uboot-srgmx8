@@ -218,6 +218,11 @@
     scl-gpios = <&gpio5 18 GPIO_ACTIVE_HIGH>;
     sda-gpios = <&gpio5 19 GPIO_ACTIVE_HIGH>;
     status = "okay";
+
+    ds1339@68 {
+	compatible = "dallas,ds1339";
+        reg = <0x68>;
+    };
 };
 
 &snvs_pwrkey {
