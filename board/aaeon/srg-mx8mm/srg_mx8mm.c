@@ -94,6 +94,29 @@ int board_phy_config(struct phy_device *phydev)
 }
 #endif
 
+#ifdef CONFIG_USB_EHCI_HCD
+int board_usb_init(int index, enum usb_init_type init)
+{
+	int ret = 0;
+
+	printf("board_usb_init %d, type %d\n", index, init);
+
+	imx8m_usb_power(index, true);
+
+	return ret;
+}
+
+int board_usb_cleanup(int index, enum usb_init_type init)
+{
+	int ret = 0;
+
+	debug("board_usb_cleanup %d, type %d\n", index, init);
+
+	imx8m_usb_power(index, false);
+	return ret;
+}
+#endif /* end of CONFIG_USB_EHCI_HCD */
+
 #define FSL_SIP_GPC			0xC2000000
 #define FSL_SIP_CONFIG_GPC_PM_DOMAIN	0x3
 #define DISPMIX				9
